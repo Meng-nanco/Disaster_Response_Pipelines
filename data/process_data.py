@@ -61,14 +61,27 @@ def clean_data(df):
 
 
 
-def save_data(df, database_filename):
-    pass
+def save_data(df, database_filepath, tablename):
+    '''
+    Save the clean dataset into an sqlite database.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        the cleaned dataset
+    database_filepath : string
+        the filepath of the database
+    tablename : string
+        the tablename for the cleaned data to be saved in the database
+    '''
+    engine = create_engine('sqlite:///{}'.format(database_filepath))
+    df.to_sql(tablename, engine, index=False, if_exists='replace')
 
 
 def main():
-    if len(sys.argv) == 4:
+    if len(sys.argv) == 5:
 
-        messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
+        messages_filepath, categories_filepath, database_filepath, tablename = sys.argv[1:]
 
         print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'
               .format(messages_filepath, categories_filepath))
@@ -78,17 +91,18 @@ def main():
         df = clean_data(df)
 
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
-        save_data(df, database_filepath)
+        print('TABLENAME: {}'.format(tablename))
+        save_data(df, database_filepath, tablename)
 
         print('Cleaned data saved to database!')
 
     else:
         print('Please provide the filepaths of the messages and categories '\
               'datasets as the first and second argument respectively, as '\
-              'well as the filepath of the database to save the cleaned data '\
-              'to as the third argument. \n\nExample: python process_data.py '\
+              'well as the filepath of the database and tablename to save the cleaned data '\
+              'to as the third and fourth argument. \n\nExample: python process_data.py '\
               'disaster_messages.csv disaster_categories.csv '\
-              'DisasterResponse.db')
+              'DisasterResponse.db disaster_messages')
 
 
 if __name__ == '__main__':
