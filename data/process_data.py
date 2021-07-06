@@ -59,6 +59,8 @@ def clean_data(df):
     #Remove duplicates
     df = df.drop_duplicates()
 
+    return df
+
 
 
 def save_data(df, database_filepath, tablename):
