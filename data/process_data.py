@@ -28,7 +28,37 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
-    pass
+    '''
+    Clean the dataframe by spliting categories column into separate category
+    columns, and remove duplicated data.
+
+    Parameters
+    ----------
+    df : pandas.DataFrame
+        the data
+
+    Returns
+    -------
+    df : pandas.DataFrame
+        the cleaned data
+    '''
+    #Create new DataFrame 'categories' with separate category columns
+    categories = df.categories.str.split(';', expand=True)
+
+    #Rename column names for categories
+    categories.columns = categories.iloc[0].apply(lambda x: x[:-2]).to_list()
+
+    #Convert category values to just numbers 0 or 1
+    for column in categories:
+        categories[column] = categories[column].apply(lambda x: x[-1]).astype(int)
+
+    #Replace the original categories column with new categories dataframe
+    df = df.drop(columns=['categories'])
+    df = pd.concat([df, categories], axis=1)
+
+    #Remove duplicates
+    df = df.drop_duplicates()
+
 
 
 def save_data(df, database_filename):
